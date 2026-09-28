@@ -1,0 +1,35 @@
+# Virtual environments
+.venv/
+../.venv/
+
+# Secrets / local config
+.env
+.env.*
+!.env.example
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Test/cache files
+.pytest_cache/
+.coverage
+htmlcov/
+
+# WetScan generated outputs
+portage_wetlands/
+wetscan_out/
+dev_dynamic_world/
+
+# IDE / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.log
+# Python packaging metadata
+*.egg-info/

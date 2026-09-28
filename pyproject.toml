@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wetscan"
+version = "0.2.0"
+description = "Multi-decade wetland extent and Alberta Wetland Classification System (AWCS) estimation from satellite imagery, Google/Bing basemaps and precipitation history."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Solas Energy Consulting Inc." }]
+dependencies = [
+    "earthengine-api>=1.0",
+    "geopandas>=0.14",
+    "pyogrio>=0.7",
+    "rasterio>=1.3",
+    "shapely>=2.0",
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "scipy>=1.10",
+    "requests>=2.31",
+    "typer>=0.9",
+    "jinja2>=3.1",
+    "matplotlib>=3.7",
+    "pillow>=10.0",
+    "mercantile>=1.2",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[project.scripts]
+wetscan = "wetscan.cli:app"
+
+[tool.setuptools.packages.find]
+include = ["wetscan*"]
+
+[tool.setuptools.package-data]
+wetscan = ["templates/*.html"]
