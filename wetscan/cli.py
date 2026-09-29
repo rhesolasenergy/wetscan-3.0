@@ -25,6 +25,101 @@ def _setup_logging(verbose: bool):
                         format="%(asctime)s %(name)s %(levelname)s %(message)s", datefmt="%H:%M:%S")
     logging.getLogger("urllib3").setLevel(logging.WARNING)
 
+@app.command("dynamic-world")
+def dynamic_world(
+    polygons: Path = typer.Argument(
+        ...,
+        help="WetScan wetland polygons: GPKG/SHP/GeoJSON",
+    ),
+    site: str = typer.Option(
+        ...,
+        help="site name / slug used in output files",
+    ),
+    out: Path = typer.Option(
+        Path("dynamic_world_out"),
+        help="output folder",
+    ),
+    start_year: int = typer.Option(
+        2016,
+        help="first Dynamic World analysis year",
+    ),
+    end_year: int = typer.Option(
+        None,
+        help="last year (default: current year)",
+    ),
+    spring_start: str = typer.Option(
+        "04-20",
+        help="spring window start MM-DD",
+    ),
+    spring_end: str = typer.Option(
+        "06-20",
+        help="spring window end MM-DD",
+    ),
+    late_start: str = typer.Option(
+        "07-15",
+        help="late-season window start MM-DD",
+    ),
+    late_end: str = typer.Option(
+        "09-20",
+        help="late-season window end MM-DD",
+    ),
+    scale_m: int = typer.Option(
+        10,
+        help="Dynamic World analysis scale in metres",
+    ),
+    layer: str = typer.Option(
+        None,
+        help="polygon layer name for GeoPackage inputs",
+    ),
+    gee_project: str = typer.Option(
+        None,
+        help="Earth Engine cloud project",
+    ),
+):
+    """Build Dynamic World hydroperiod evidence tables for wetland polygons."""
+    import pandas as pd
+
+    from .dynamic_world import build_evidence_tables
+
+    cfg = Config()
+
+    project = (
+        gee_project
+        or cfg.keys.gee_project
+    )
+
+    if not project:
+        raise typer.BadParameter(
+            "Earth Engine project required via "
+            "--gee-project or GEE_PROJECT."
+        )
+
+    final_year = (
+        end_year
+        or pd.Timestamp.today().year
+    )
+
+    result = build_evidence_tables(
+        polygons_path=polygons,
+        site=site,
+        out_dir=out,
+        start_year=start_year,
+        end_year=final_year,
+        gee_project=project,
+        scale_m=scale_m,
+        spring_start=spring_start,
+        spring_end=spring_end,
+        late_start=late_start,
+        late_end=late_end,
+        layer=layer,
+    )
+
+    typer.echo(
+        json.dumps(
+            result,
+            indent=2,
+        )
+    )
 
 @app.command()
 def sites(aoi: Path, study_buffer_m: float = 2000.0):
